@@ -1,2 +1,14 @@
 *.idea
+<<<<<<< HEAD
 /target/
+=======
+*.iml
+target/*
+target\*
+target/
+target\
+/target/*
+\target\*
+/target/
+\target\
+>>>>>>> origin/master
