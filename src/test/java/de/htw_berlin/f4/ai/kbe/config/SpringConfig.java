@@ -1,5 +1,9 @@
 package de.htw_berlin.f4.ai.kbe.config;
 
+import de.htw_berlin.aStudent.repository.*;
+import de.htw_berlin.aStudent.service.MessageService;
+import de.htw_berlin.aStudent.service.TopicService;
+import de.htw_berlin.aStudent.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -14,7 +18,12 @@ public class SpringConfig {
 
 	@Bean
 	ShortMessageService shortMessageService(){
-		return new ShortMessageServiceImpl();
+
+		UserRepoInterface userRepo = new MockUserRepo();
+		TopicRepoInterface topicRepo = new MockTopicRepo(userRepo);
+		 MessageRepoInterface messageRepo = new MockMessageRepo(topicRepo);
+
+		return new ShortMessageServiceImpl(userRepo,topicRepo,messageRepo);
 	}
 	
 }

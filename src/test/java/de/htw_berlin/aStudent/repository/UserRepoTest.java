@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
  */
 public class UserRepoTest {
     
-    private UserRepo userRepo = null;
+    private UserRepoInterface userRepo = null;
     
     public UserRepoTest() {
         this.userRepo = null;
@@ -21,7 +21,7 @@ public class UserRepoTest {
     
     @Before
     public void createDummies() {
-        userRepo = new UserRepo();
+        userRepo = new MockUserRepo();
         userRepo.createUser("testUser1", "testCity1");
         userRepo.createUser("testUser2", "testCity2");
     }
@@ -38,7 +38,7 @@ public class UserRepoTest {
     public void testCreateUserCheckName() {
         userRepo.createUser("testUser3", "testCity3");
         boolean bool = false;
-        List<UserE> userList = UserRepo.getAllUsers();
+        List<UserE> userList = userRepo.getAllUsers();
         for (UserE u: userList)
             if(u.getName().equals("testUser3"))
             {bool = true;
@@ -50,41 +50,12 @@ public class UserRepoTest {
     public void testCreateUserCheckCity() {
         userRepo.createUser("testUser3", "testCity3");
         boolean bool = false;
-        List<UserE> userList = UserRepo.getAllUsers();
+        List<UserE> userList = userRepo.getAllUsers();
         for (UserE u: userList)
             if(u.getName().equals("testUser3") && u.getCity().equals("testCity3"))
             {bool = true;
                 break;}
         assertTrue(bool);
-    }
-
-    @Test(expected=NullPointerException.class)
-    public void testCreateUserIsNull() {
-        userRepo.createUser(null, "testCity1");
-    }
-
-    @Test(expected=NullPointerException.class)
-    public void testCreateUsersCityIsNull() {
-        userRepo.createUser("testUser3", null);
-    }
-
-    @Test(expected=IllegalArgumentException.class)
-    public void testCreateUserExists() {
-        userRepo.createUser("testuser1", "Berlin");
-    }
-
-    @Test(expected=IllegalArgumentException.class)
-    public void testCreateUserNameTooLong() {
-        String userName = "";
-        for(int i = 0; i<= 31; i++){
-            userName += "u";
-        }
-        userRepo.createUser(userName, "testCity1");
-    }
-
-    @Test(expected=IllegalArgumentException.class)
-    public void testCreateUserNameTooShort() {
-        userRepo.createUser("123", "testCity1");
     }
 
     /**
@@ -93,7 +64,7 @@ public class UserRepoTest {
     @Test
     public void testDeleteUser() {
         userRepo.deleteUser("testUser1");
-        List<UserE> userList = UserRepo.getAllUsers();
+        List<UserE> userList = userRepo.getAllUsers();
         boolean bool = false;
         for (UserE u: userList)
             if(u.getName().equals("testUser1"))
@@ -102,19 +73,22 @@ public class UserRepoTest {
         assertFalse(bool);
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void testDeleteUserDoesNotExist() {
-        UserRepo.deleteUser("testUser3");
-    }
-
     /**
      * Test of getUsers method, of class ShortMessageService.
      */
     @Test
     public void testGetAllUsers() {
-        boolean bool = false;
-        List<UserE> userList = UserRepo.getAllUsers();
-        assertTrue(userList.contains("testUser2") && userList.contains("testUser1"));
+        boolean bool1 = false;
+        boolean bool2 = false;
+        List<UserE> userList = userRepo.getAllUsers();
+        for (UserE uE: userList){
+            if(uE.getName().equals("testUser1")) {
+                bool1 = true;
+            } else if(uE.getName().equals("testUser2")) {
+                bool2 = true;
+            }
+        }
+        assertTrue(bool1 && bool2);
     }
     
     /**
@@ -122,13 +96,9 @@ public class UserRepoTest {
      */
     @Test
     public void testFindByUserName() {
-        System.out.println("findByUserName");
-        String username = "";
-        UserE expResult = null;
-        UserE result = UserRepo.findByUserName(username);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String username = "testUser2";
+        UserE result = userRepo.findByUserName(username);
+        assertTrue(result.getName().equals(username));
     }
 
     /**
@@ -136,13 +106,8 @@ public class UserRepoTest {
      */
     @Test
     public void testUserExits() {
-        System.out.println("userExits");
-        String username = "";
-        boolean expResult = false;
-        boolean result = UserRepo.userExits(username);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String username = "testUser1";
+        assertTrue(userRepo.userExits(username));
     }
     
 }
